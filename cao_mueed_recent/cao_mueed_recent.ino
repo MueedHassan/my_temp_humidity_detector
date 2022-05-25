@@ -1,20 +1,20 @@
-#include "DHT.h"
-#include "AsyncTCP.h"
-#include "ESPAsyncWebServer.h"
-#include "WiFi.h"
+#include "DHT.h"//thats a custom library for tempreture sensor
+#include "AsyncTCP.h"//this library help to handle the clients on the server
+#include "ESPAsyncWebServer.h"//thats help in developing asynchronous webserver
+#include "WiFi.h"//library for tthe server
 
-#define buzzer 2
-#define DHTPIN 15
+#define buzzer 2//GPIO 15 specified to signal related to heat buzzer
+#define DHTPIN 15//GPIO 15 specified to signal related to heat sensor
 DHT dht(DHTPIN, DHT11);
-float heat;
+float heat;//variable declaration
 float humidity;
 float temperature;
 
-const char* SSID = "Pixel";
+const char* SSID = "Pixel";//password and name of the wifi connection defined
 const char* PASS = "12345678";
-const char* host = "maker.ifttt.com";
-const char* apiKey = "ljDp0I5nwX8IDsRtigiYh6yIN9nfXm8DKymsgdUpKw9";
-const char* event = "tempExceeded";
+const char* host = "maker.ifttt.com";//host that provide the service of sending email
+const char* apiKey = "ljDp0I5nwX8IDsRtigiYh6yIN9nfXm8DKymsgdUpKw9";//API IS used to send email
+const char* event = "tempExceeded";//thats an event that the attention point
 unsigned long previousMillis = 0;
 unsigned long interval = 30000;
 
@@ -25,7 +25,7 @@ void send_email();
 
 String readTemp() {
   temperature = dht.readTemperature();
-  while (isnan(temperature)) {
+  while (isnan(temperature)) {//checking for illegal values
     temperature = dht.readTemperature();
   }
 if(temperature > 30){
@@ -54,16 +54,16 @@ String readHeat() {
 
 
 //***************************************************************************************************************************************************************
-
+//that an html file to show the result
 
 //*******************************************************************************************************************************************
 const char index_html[] PROGMEM = R"rawliteral(
 <!DOCTYPE HTML><html>
-<head>
+<head>// header of an html file defined
   <title>ESP Web Server</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="icon" href="data:,">
-  <style>
+  <style>//css styles defined here
     html {
       font-family: Arial; 
       display: inline-block; 
@@ -134,7 +134,7 @@ const char index_html[] PROGMEM = R"rawliteral(
     <span>Heat Index</span> 
     <span id="heat">%HEAT%</span>
   </p>
-  <script>
+  <script>       //js code used that uses xml so data is provided to page and not have to refresh it every time
     setInterval(function ( ) {
       var xhttp = new XMLHttpRequest();
       xhttp.onreadystatechange = function() {
@@ -197,7 +197,7 @@ void setup() {
   pinMode(buzzer,OUTPUT);
   dht.begin();
   delay(1500);
-
+//wifi connection setup starts here
  WiFi.begin(SSID, PASS);
   while (WiFi.status() != WL_CONNECTED) {
     delay(500);
@@ -247,7 +247,7 @@ if ((WiFi.status() != WL_CONNECTED) && (currentMillis - previousMillis >=interva
 }
   }
 
-void send_email(){
+void send_email(){//function defined to send email
       Serial.print("connecting to ");
       Serial.println(host);
       WiFiClient client;
